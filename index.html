@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifePulse — Organizador de Rotinas</title>
+  <!-- Importação do arquivo CSS separado -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Canvas para animação 3D no fundo -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="container">
+    <header>
+      <h1 class="gradient-text">LifePulse</h1>
+      <p>Organizador de Rotina Pessoal e Profissional</p>
+    </header>
+
+    <main class="grid">
+      <div class="card" onclick="openModal('estudo')">
+        <div class="card-icon">📚</div>
+        <h2>Estudos</h2>
+        <p>Desenvolvimento pessoal e aprendizado contínuo.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+
+      <div class="card" onclick="openModal('trabalho')">
+        <div class="card-icon">💼</div>
+        <h2>Trabalho</h2>
+        <p>Projetos, reuniões e metas profissionais.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+
+      <div class="card" onclick="openModal('lazer')">
+        <div class="card-icon">🎬</div>
+        <h2>Lazer</h2>
+        <p>Momentos de descanso, filmes e descontração.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+
+      <div class="card" onclick="openModal('hobby')">
+        <div class="card-icon">🎨</div>
+        <h2>Hobby</h2>
+        <p>Paixões criativas, música e arte.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+
+      <div class="card" onclick="openModal('esportes')">
+        <div class="card-icon">⚡</div>
+        <h2>Esportes</h2>
+        <p>Treinos, caminhadas e superação física.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+
+      <div class="card" onclick="openModal('saude')">
+        <div class="card-icon">🧘‍♀️</div>
+        <h2>Saúde</h2>
+        <p>Meditação, boa alimentação e hidratação.</p>
+        <span class="btn-more">Ver Detalhes &rarr;</span>
+      </div>
+    </main>
+  </div>
+
+  <!-- Estrutura Modal Único Dinâmico -->
+  <div id="modal-container" class="modal-overlay" onclick="closeModalOnOuterClick(event)">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <div id="modal-body-content" class="modal-body">
+        <!-- Conteúdo injetado via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Embutido conforme solicitado no prompt -->
+  <script>
+    /* 1. DADOS DAS ROTINAS */
+    const routineData = {
+      estudo: {
+        title: '📚 Rotina de Estudos',
+        items: [
+          '<strong>08:00 - 09:30:</strong> Leitura técnica e documentação.',
+          '<strong>14:00 - 15:30:</strong> Aulas práticas da Alura / Cursos.',
+          '<strong>20:00 - 21:00:</strong> Exercícios de fixação e revisão.'
+        ]
+      },
+      trabalho: {
+        title: '💼 Rotina de Trabalho',
+        items: [
+          '<strong>09:00:</strong> Daily Meeting e organização das tasks.',
+          '<strong>10:00 - 12:00:</strong> Foco em desenvolvimento de protótipos.',
+          '<strong>16:00 - 17:30:</strong> Revisão de código e alinhamentos.'
+        ]
+      },
+      lazer: {
+        title: '🎬 Tempo de Lazer',
+        items: [
+          '<strong>12:30 - 13:30:</strong> Pausa completa e séries/podcasts.',
+          '<strong>19:00 - 20:00:</strong> Jogos online com amigos.',
+          '<strong>Finais de semana:</strong> Passeios ao ar livre.'
+        ]
+      },
+      hobby: {
+        title: '🎨 Prática de Hobbies',
+        items: [
+          '<strong>Terças e Quintas:</strong> Prática de desenho / instrumento.',
+          '<strong>Sábados:</strong> Escrita criativa e projetos pessoais.'
+        ]
+      },
+      esportes: {
+        title: '⚡ Atividades Físicas',
+        items: [
+          '<strong>07:00 - 07:45:</strong> Corrida matinal / Academia.',
+          '<strong>18:30 - 19:15:</strong> Treino funcional ou ciclismo.',
+          '<strong>Meta diária:</strong> 10.000 passos atingidos.'
+        ]
+      },
+      saude: {
+        title: '🧘‍♀️ Cuidados com a Saúde',
+        items: [
+          '<strong>Hidratação:</strong> Tomar no mínimo 2.5L de água por dia.',
+          '<strong>07:45:</strong> Meditação guiada e alongamento.',
+          '<strong>22:30:</strong> Desligar telas para higienização do sono.'
+        ]
+      }
+    };
+
+    /* 2. LÓGICA DO MODAL */
+    const modalContainer = document.getElementById('modal-container');
+    const modalBodyContent = document.getElementById('modal-body-content');
+
+    function openModal(category) {
+      const data = routineData[category];
+      if (!data) return;
+
+      const listHTML = data.items.map(item => `<li>${item}</li>`).join('');
+      modalBodyContent.innerHTML = `
+        <h2 class="gradient-text">${data.title}</h2>
+        <ul>${listHTML}</ul>
+      `;
+
+      modalContainer.classList.add('active');
+    }
+
+    function closeModal() {
+      modalContainer.classList.remove('active');
+    }
+
+    function closeModalOnOuterClick(event) {
+      if (event.target === modalContainer) {
+        closeModal();
+      }
+    }
+
+    /* 3. ANIMAÇÃO DE OBJETOS 3D EM CANVAS NATIVO (Sem dependências externas) */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const numObjects = 25;
+    const objects = [];
+
+    for (let i = 0; i < numObjects; i++) {
+      objects.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        z: Math.random() * 3 + 0.5,
+        size: Math.random() * 30 + 15,
+        angleX: Math.random() * Math.PI * 2,
+        angleY: Math.random() * Math.PI * 2,
+        speedX: (Math.random() - 0.5) * 0.6,
+        speedY: (Math.random() - 0.5) * 0.6,
+        rotSpeedX: (Math.random() - 0.5) * 0.02,
+        rotSpeedY: (Math.random() - 0.5) * 0.02,
+        type: Math.floor(Math.random() * 2)
+      });
+    }
+
+    function draw3DObject(obj) {
+      ctx.save();
+      ctx.translate(obj.x, obj.y);
+
+      const gradient = ctx.createLinearGradient(-obj.size, -obj.size, obj.size, obj.size);
+      gradient.addColorStop(0, '#00f2fe');
+      gradient.addColorStop(0.5, '#9b51e0');
+      gradient.addColorStop(1, '#ff0844');
+
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 1.5 * obj.z;
+      ctx.fillStyle = 'rgba(15, 15, 25, 0.4)';
+
+      const cosX = Math.cos(obj.angleX);
+      const sinX = Math.sin(obj.angleX);
+      const cosY = Math.cos(obj.angleY);
+      const sinY = Math.sin(obj.angleY);
+
+      if (obj.type === 0) {
+        const s = obj.size * obj.z;
+        const vertices = [
+          [-s, -s, -s], [s, -s, -s], [s, s, -s], [-s, s, -s],
+          [-s, -s, s],  [s, -s, s],  [s, s, s],  [-s, s, s]
+        ];
+
+        const proj = vertices.map(([vx, vy, vz]) => {
+          let x1 = vx * cosY - vz * sinY;
+          let z1 = vx * sinY + vz * cosY;
+          let y2 = vy * cosX - z1 * sinX;
+          return [x1, y2];
+        });
+
+        const faces = [
+          [0,1,2,3], [4,5,6,7], [0,1,5,4],
+          [2,3,7,6], [0,3,7,4], [1,2,6,5]
+        ];
+
+        faces.forEach(face => {
+          ctx.beginPath();
+          ctx.moveTo(proj[face[0]][0], proj[face[0]][1]);
+          for (let i = 1; i < face.length; i++) {
+            ctx.lineTo(proj[face[i]][0], proj[face[i]][1]);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        });
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, obj.size * obj.z, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      objects.forEach(obj => {
+        obj.x += obj.speedX;
+        obj.y += obj.speedY;
+        obj.angleX += obj.rotSpeedX;
+        obj.angleY += obj.rotSpeedY;
+
+        if (obj.x < -50) obj.x = width + 50;
+        if (obj.x > width + 50) obj.x = -50;
+        if (obj.y < -50) obj.y = height + 50;
+        if (obj.y > height + 50) obj.y = -50;
+
+        draw3DObject(obj);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
